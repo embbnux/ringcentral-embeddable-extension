@@ -8,11 +8,12 @@
     "storage",
     "activeTab",
     "unlimitedStorage",
-    "https://*.office365.com/*"
+    "https://*.office365.com/*",
+    "https://*.office.com/*"
   ],
   "content_scripts": [
     {
-      "matches": ["https://*.office365.com/*"],
+      "matches": ["https://*.office365.com/*", "https://*.office.com/*"],
       "js": [
         "./content.js"
       ]
