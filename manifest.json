@@ -7,6 +7,9 @@
     "https://*/",
     "storage",
     "activeTab",
+    "tabs",
+    "background",
+    "tabCapture",
     "unlimitedStorage",
     "https://*.office365.com/*",
     "https://*.office.com/*"
@@ -19,6 +22,11 @@
       ]
     }
   ],
+  "background": {
+    "scripts": ["background.js"],
+    "persistent": true
+  },
+  "browser_action": {},
   "content_security_policy": "script-src 'self' https://ringcentral.github.io/ringcentral-embeddable-voice; object-src 'self'",
   "manifest_version": 2
 }
