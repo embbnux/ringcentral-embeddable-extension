@@ -16,7 +16,7 @@
   ],
   "content_scripts": [
     {
-      "matches": ["https://*.office365.com/*", "https://*.office.com/*"],
+      "matches": ["https://*.office365.com/*", "https://outlook.office.com/*"],
       "js": [
         "./content.js"
       ]
