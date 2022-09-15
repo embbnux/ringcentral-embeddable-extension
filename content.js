@@ -1,23 +1,28 @@
-console.log('import RingCentral Embeddable Voice to web page');
+console.log('import content js to web page');
 
-(function() {
-  var rcs = document.createElement("script");
-  rcs.src = "https://ringcentral.github.io/ringcentral-embeddable-voice/adapter.js";
-  var rcs0 = document.getElementsByTagName("script")[0];
-  rcs0.parentNode.insertBefore(rcs, rcs0);
-})();
-
-function buildO365CalendarUrl(params={}) {
-  var encoded = [];
-  if ('subject' in params) {
-    encoded.push('subject=' + encodeURIComponent(params['subject']));
-  }
-  if ('body' in params) {
-    encoded.push('body=' + encodeURIComponent(params['body']));
-  }
-  encoded.push('path=/calendar/action/compose')
-  return 'https://outlook.office.com/owa/#' + encoded.join('&');
-}
+window.clickToDialInject = new window.RingCentralC2D();
+window.clickToDialInject.on(
+  window.RingCentralC2D.events.call,
+  function(phoneNumber) {
+    console.log('Click To Dial:', phoneNumber);
+    // alert('Click To Dial:' + phoneNumber);
+    chrome.runtime.sendMessage({
+      type: 'c2d',
+      phoneNumber,
+    });
+  },
+);
+window.clickToDialInject.on(
+  window.RingCentralC2D.events.text,
+  function(phoneNumber) {
+    console.log('Click To SMS:', phoneNumber);
+    // alert('Click To SMS:' + phoneNumber);
+    chrome.runtime.sendMessage({
+      type: 'c2sms',
+      phoneNumber,
+    });
+  },
+);
 
 function responseMessage(request, response) {
   document.querySelector("#rc-widget-adapter-frame").contentWindow.postMessage({
@@ -25,14 +30,6 @@ function responseMessage(request, response) {
     responseId: request.requestId,
     response,
   }, '*');
-}
-
-function inviteConference(request) {
-  const calendarUrl = buildO365CalendarUrl({
-    'subject':'New Conference',
-    'body': request.body.conference.inviteText});
-  window.location.href = calendarUrl;
-  responseMessage(request, { data: 'ok' });
 }
 
 // Interact with RingCentral Embeddable Voice:
@@ -52,10 +49,6 @@ window.addEventListener('message', (e) => {
         // get call on start a outbound call event
         console.log('RingCentral Embeddable Voice Extension:', data.call);
         break;
-      case 'rc-post-message-request':
-        if (data.path === '/conference/invite') {
-          inviteConference(data);
-        }
       default:
         break;
     }
@@ -82,24 +75,3 @@ chrome.runtime.onMessage.addListener(
     sendResponse('ok');
   }
 );
-
-function registerService() {
-  document.querySelector("#rc-widget-adapter-frame").contentWindow.postMessage({
-    type: 'rc-adapter-register-third-party-service',
-    service: {
-      name: 'TestService',
-      conferenceInvitePath: '/conference/invite',
-      conferenceInviteTitle: 'Invite with Office 365 Calendar'
-    }
-  }, '*');
-}
-
-var registered = false;
-window.addEventListener('message', function (e) {
-  const data = e.data;
-  if (data && data.type === 'rc-adapter-pushAdapterState' && registered === false) {
-    registered = true;
-    registerService();
-  }
-});
-
