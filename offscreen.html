@@ -42,12 +42,8 @@
   </style>
 </head>
 <body>
-  <div id='viewport'>
-    <p id="appLoading">
-      Loading...
-    </p>
-  </div>
-  <script src="./popup.js"></script>
-  <script src="./embeddable/adapter.js"></script>
+  <iframe title="RingCentral Embeddable" width="300" height="500" id="rc-widget-adapter-frame" allow="autoplay; microphone" sandbox="allow-same-origin allow-scripts allow-forms allow-popups allow-downloads allow-popups-to-escape-sandbox" src="about:blank'">
+</iframe>
+  <script src="./offscreen.js"></script>
 </body>
 </html>

@@ -9,6 +9,27 @@ function responseMessage(request, response) {
   }, '*');
 }
 
+async function handleOAuthWindow(oAuthUri) {
+  chrome.runtime.sendMessage({
+    type: 'openOAuthWindow',
+    oAuthUri,
+  });
+  // chrome.identity.launchWebAuthFlow(
+  //   {
+  //     url: oAuthUri,
+  //     interactive: true,
+  //   },
+  //   (responseUrl) => {
+  //     if (responseUrl) {
+  //       document.querySelector("#rc-widget-adapter-frame").contentWindow.postMessage({
+  //         type: 'rc-adapter-authorization-code',
+  //         callbackUri: responseUrl,
+  //       }, '*');
+  //     }
+  //   },
+  // );
+}
+
 // Interact with RingCentral Embeddable Voice:
 window.addEventListener('message', (e) => {
   const data = e.data;
@@ -42,7 +63,9 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
       callbackUri: request.callbackUri,
     }, '*');
     sendResponse({ result: 'ok' });
-  } else if (request.type === 'c2sms') {
+    return;
+  }
+  if (request.type === 'c2sms') {
     document.querySelector("#rc-widget-adapter-frame").contentWindow.postMessage({
       type: 'rc-adapter-new-sms',
       phoneNumber: request.phoneNumber,
@@ -57,27 +80,6 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
     sendResponse({ result: 'ok' });
   }
 });
-
-async function handleOAuthWindow(oAuthUri) {
-  chrome.runtime.sendMessage({
-    type: 'openOAuthWindow',
-    oAuthUri,
-  });
-  // chrome.identity.launchWebAuthFlow(
-  //   {
-  //     url: oAuthUri,
-  //     interactive: true,
-  //   },
-  //   (responseUrl) => {
-  //     if (responseUrl) {
-  //       document.querySelector("#rc-widget-adapter-frame").contentWindow.postMessage({
-  //         type: 'rc-adapter-authorization-code',
-  //         callbackUri: responseUrl,
-  //       }, '*');
-  //     }
-  //   },
-  // );
-}
 
 function registerService() {
   document.querySelector("#rc-widget-adapter-frame").contentWindow.postMessage({
